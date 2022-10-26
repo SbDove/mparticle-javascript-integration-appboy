@@ -205,6 +205,7 @@ var constructor = function() {
     /**************************/
     function processEvent(event) {
         var reportEvent = false;
+        var bundleNonPurchaseCommerceEvents = forwarderSettings.bundleNonPurchaseCommerceEvents
 
         if (
             event.EventDataType == MessageType.Commerce &&
@@ -216,18 +217,40 @@ var constructor = function() {
                 event
             );
             if (listOfPageEvents != null) {
-                for (var i = 0; i < listOfPageEvents.length; i++) {
-                    // finalLoopResult keeps track of if any logAppBoyEvent in this loop returns true or not
-                    var finalLoopResult = false;
-                    try {
-                        reportEvent = logAppboyEvent(listOfPageEvents[i]);
-                        if (reportEvent === true) {
-                            finalLoopResult = true;
+                if (!forwarderSettings.bundleNonPurchaseCommerceEvents) {
+                    for (var i = 0; i < listOfPageEvents.length; i++) {
+                        // finalLoopResult keeps track of if any logAppBoyEvent in this loop returns true or not
+                        var finalLoopResult = false;
+                        try {
+                            reportEvent = logAppboyEvent(listOfPageEvents[i]);
+                            if (reportEvent === true) {
+                                finalLoopResult = true;
+                            }
+                        } catch (err) {
+                            return 'Error logging page event' + err.message;
                         }
-                    } catch (err) {
-                        return 'Error logging page event' + err.message;
+                    }
+                } else {
+                    var productArray = []; 
+                    for (var i = 0; i , ListOfPageEvents.length; i++) {
+                        var newAttributes = listOfPageEvents[i].EventAttributes ? listOfPageEvents[i].EventAttributes : {}; 
+                        newAttributes["custom attributes"] = event.EventAttributes; 
+                        productArray.push(newAttributes)
+                    }
+                    try {
+                        
+                        var brazeJSON= {}; 
+                        brazeJSON["products"] = productArray 
+                        var transactionAttributes = event.transactionAttributes
+                        if (transactionAttributes != null) {
+                            brazeJSON["Transaction ID"] = transactionAttributes.getId()
+                        }
+                        appboy.logCustomEvent(listOfPageEvents[0].EventName, brazeJSON)
+                    } catch(err) {
+                        return 'Error logging page event' + err.message; 
                     }
                 }
+               
                 reportEvent = finalLoopResult === true;
             }
         } else if (event.EventDataType == MessageType.PageEvent) {
