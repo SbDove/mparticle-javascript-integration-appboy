@@ -1296,4 +1296,48 @@ describe('Appboy Forwarder', function() {
         window.appboy.options.should.have.property('brazeSetting1', true);
         window.appboy.options.should.have.property('brazeSetting2', true);
     });
+
+    it('should log a single non purchase commerce event with multiple products if bundleNonPurchaseCommerceEvents is true', function() {
+        mParticle.forwarder.init(
+            {
+                apiKey: '123456',
+                bundleNonPurchaseCommerceEvents: 'True',
+            },
+            reportService.cb,
+            true,
+            null
+        );
+
+        mParticle.forwarder.process({
+            EventName: 'Test Non-Purchase Commerce Event',
+            EventDataType: MessageType.Commerce,
+            EventCategory: EventType.ProductCheckout,
+            CurrencyCode: 'USD',
+            ProductAction: {
+                TransactionId: 1234,
+                TotalAmount: 50,
+                ProductList: [
+                    {
+                        Price: '50',
+                        Name: '$Product $Name',
+                        TotalAmount: 50,
+                        Quantity: 1,
+                        Attributes: { $$$attri$bute: '$$$$what$ever' },
+                        Sku: 12345,
+                    },
+                    {
+                        Price: '50',
+                        Name: '$Product $2 $Name',
+                        TotalAmount: 50,
+                        Quantity: 1,
+                        Attributes: { $$$attri$bute2: '$$$$what$ever2' },
+                        Sku: 12345,
+                    },
+                ],
+            },
+        });
+        debugger
+        window.appboy.should.have.property('logCustomEventCalled', true);
+    });
+
 });

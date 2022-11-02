@@ -217,7 +217,7 @@ var constructor = function() {
                 event
             );
             if (listOfPageEvents != null) {
-                if (!forwarderSettings.bundleNonPurchaseCommerceEvents) {
+                if (!bundleNonPurchaseCommerceEvents) {
                     for (var i = 0; i < listOfPageEvents.length; i++) {
                         // finalLoopResult keeps track of if any logAppBoyEvent in this loop returns true or not
                         var finalLoopResult = false;
@@ -232,7 +232,7 @@ var constructor = function() {
                     }
                 } else {
                     var productArray = []; 
-                    for (var i = 0; i , ListOfPageEvents.length; i++) {
+                    for (var i = 0; i < listOfPageEvents.length; i++) {
                         var newAttributes = listOfPageEvents[i].EventAttributes ? listOfPageEvents[i].EventAttributes : {}; 
                         newAttributes["custom attributes"] = event.EventAttributes; 
                         productArray.push(newAttributes)
@@ -240,11 +240,12 @@ var constructor = function() {
                     try {
                         
                         var brazeJSON= {}; 
-                        brazeJSON["products"] = productArray 
+                        brazeJSON.products = productArray 
                         var transactionAttributes = event.transactionAttributes
                         if (transactionAttributes != null) {
                             brazeJSON["Transaction ID"] = transactionAttributes.getId()
                         }
+                        brazeJSON.transactionAttributes = transactionAttributes
                         appboy.logCustomEvent(listOfPageEvents[0].EventName, brazeJSON)
                     } catch(err) {
                         return 'Error logging page event' + err.message; 
