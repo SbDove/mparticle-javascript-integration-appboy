@@ -231,6 +231,7 @@ var constructor = function() {
                         }
                     }
                 } else {
+
                     var productArray = []; 
                     for (var i = 0; i < event.ProductAction.ProductList.length; i++) {
                         var sanitizedProduct = getSanitizedCustomProperties(event.ProductAction.ProductList[i])

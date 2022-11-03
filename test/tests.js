@@ -1297,7 +1297,7 @@ describe('Appboy Forwarder', function() {
         window.appboy.options.should.have.property('brazeSetting2', true);
     });
 
-    it.only('should log a single non purchase commerce event with multiple products if bundleNonPurchaseCommerceEvents is true', function() {
+    it('should log a single non purchase commerce event with multiple products if bundleNonPurchaseCommerceEvents is true', function() {
         mParticle.forwarder.init(
             {
                 apiKey: '123456',
