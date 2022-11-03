@@ -232,21 +232,21 @@ var constructor = function() {
                     }
                 } else {
                     var productArray = []; 
-                    for (var i = 0; i < listOfPageEvents.length; i++) {
-                        var newAttributes = listOfPageEvents[i].EventAttributes ? listOfPageEvents[i].EventAttributes : {}; 
-                        newAttributes["custom attributes"] = event.EventAttributes; 
-                        productArray.push(newAttributes)
+                    for (var i = 0; i < event.ProductAction.ProductList.length; i++) {
+                        var sanitizedProduct = getSanitizedCustomProperties(event.ProductAction.ProductList[i])
+                        productArray.push(sanitizedProduct)
                     }
                     try {
                         
                         var brazeJSON= {}; 
                         brazeJSON.products = productArray 
-                        var transactionAttributes = event.transactionAttributes
-                        if (transactionAttributes != null) {
-                            brazeJSON["Transaction ID"] = transactionAttributes.getId()
-                        }
-                        brazeJSON.transactionAttributes = transactionAttributes
-                        appboy.logCustomEvent(listOfPageEvents[0].EventName, brazeJSON)
+                      
+                        brazeJSON["Transaction ID"] = event.ProductAction.TransactionId
+                       
+                        var newEvent = {}
+                        newEvent.EventName = event.EventName; 
+                        newEvent.EventAttributes = brazeJSON
+                        logAppboyEvent(newEvent)
                     } catch(err) {
                         return 'Error logging page event' + err.message; 
                     }

@@ -1297,7 +1297,7 @@ describe('Appboy Forwarder', function() {
         window.appboy.options.should.have.property('brazeSetting2', true);
     });
 
-    it('should log a single non purchase commerce event with multiple products if bundleNonPurchaseCommerceEvents is true', function() {
+    it.only('should log a single non purchase commerce event with multiple products if bundleNonPurchaseCommerceEvents is true', function() {
         mParticle.forwarder.init(
             {
                 apiKey: '123456',
@@ -1311,7 +1311,7 @@ describe('Appboy Forwarder', function() {
         mParticle.forwarder.process({
             EventName: 'Test Non-Purchase Commerce Event',
             EventDataType: MessageType.Commerce,
-            EventCategory: EventType.ProductCheckout,
+            EventCategory: CommerceEventType.ProductCheckout,
             CurrencyCode: 'USD',
             ProductAction: {
                 TransactionId: 1234,
@@ -1336,8 +1336,8 @@ describe('Appboy Forwarder', function() {
                 ],
             },
         });
-        debugger
         window.appboy.should.have.property('logCustomEventCalled', true);
+        window.appboy.eventProperties[0].products.length.should.equal(2); 
     });
 
 });
